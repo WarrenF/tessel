@@ -4,7 +4,9 @@
   "description": "Tessel project",
   "main": "index.js",
   "dependencies": {
-    "t2-cli": "0.0.23"
+    "accel-mma84": "^0.2.4",
+    "t2-cli": "0.0.23",
+    "tessel-av": "^0.7.0"
   },
   "devDependencies": {},
   "scripts": {
