@@ -1,0 +1,19 @@
+{
+  "name": "tessel",
+  "version": "0.0.0",
+  "description": "Tessel project",
+  "main": "index.js",
+  "dependencies": {
+    "t2-cli": "0.0.23"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "git://github.com/WarrenF/tessel.git",
+  "keywords": [
+    "Tessel"
+  ],
+  "license": "MIT",
+  "readme": "A bare bones Tessel 2 blinky script."
+}
