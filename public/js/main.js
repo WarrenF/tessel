@@ -42,15 +42,17 @@
       self.loadWebSocket( );
     }, 1000 );
 
-    /*
+
     self.params.sounds = {
-      music: new Howl( {
-        urls: ['audio/music.mp3?noCache=' + Math.random( ) ],
-        volume: self.params.volume,
-        buffer: true
+      correct: new Howl( {
+        urls: ['audio/correct.wav' ],
+        volume: self.params.volume
+      } ),
+      wrong: new Howl( {
+        urls: ['audio/wrong.wav' ],
+        volume: self.params.volume
       } )
     };
-    */
 
   };
 
@@ -102,16 +104,23 @@
       self.params.instruction.text( instruction + '!' );
       self.params.expectedInput = instruction;
 
+      setTimeout( function ( ) {
+        socket.emit( 'tellServerToSendInput' );
+      }, 1000 );
+
     } );
 
     socket.on( 'input', function ( input ) {
       if ( input === self.params.expectedInput ) {
         self.params.score ++;
         self.params.scoreObj.text( self.params.score );
+        self.params.sounds.correct.play( );
+      } else {
+        self.params.sounds.wrong.play( );
       }
-      setTimeout( function () {
+      setTimeout( function ( ) {
         socket.emit( 'requestInstruction' );
-      }, 10 )
+      }, 10 );
     } );
 
     /*
