@@ -27,6 +27,10 @@
     self.params.volume = 1;
     self.params.body = $( 'body' );
     self.params.connectionStatus = $( '.connectionStatus' );
+    self.params.instruction = $( '.instruction' );
+    self.params.expectedInput = '';
+    self.params.score = 0;
+    self.params.scoreObj = $( '.score' );
     self.startGame( );
 
   };
@@ -34,7 +38,6 @@
   self.startGame = function ( ) {
 
     //TODO: SETUP MUSIC/SOUNDS
-
     setTimeout( function ( ) {
       self.loadWebSocket( );
     }, 1000 );
@@ -80,8 +83,35 @@
     };
     */
 
-    socket.on( 'connectedToRoom', function( room ){
-      self.params.connectionStatus.text( 'Connected!' ).removeClass( 'flash' ).css( 'color', 'lightgreen' );
+    socket.on( 'connectedToRoom', function( room ) {
+      self.params.connectionStatus
+        .text( 'Connected!' ).removeClass( 'flash' ).css( 'color', 'lightgreen' )
+        .delay( 1000 )
+        .fadeOut( 'slow' );
+
+        setTimeout( function ( ) {
+          self.params.instruction
+            .removeClass( 'hide' );
+          socket.emit( 'requestInstruction' );
+        }, 1000 );
+
+    } );
+
+    socket.on( 'instruction', function( instruction ) {
+
+      self.params.instruction.text( instruction + '!' );
+      self.params.expectedInput = instruction;
+
+    } );
+
+    socket.on( 'input', function ( input ) {
+      if ( input === self.params.expectedInput ) {
+        self.params.score ++;
+        self.params.scoreObj.text( self.params.score );
+      }
+      setTimeout( function () {
+        socket.emit( 'requestInstruction' );
+      }, 10 )
     } );
 
     /*
@@ -115,7 +145,7 @@
           var allScriptsLoadedInterval = setInterval( function ( ) {
             if ( typeof $.fn.scrollspy != 'function' || typeof $.fn.waypoint != 'function' ) return;
             clearInterval( allScriptsLoadedInterval );
-            self.scriptsLoaded( )
+            self.scriptsLoaded( );
           }, 100 );
         }
       } );
