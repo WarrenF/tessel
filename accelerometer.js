@@ -7,51 +7,60 @@ of x, y, and z data from the accelerometer
 *********************************************/
 
 var tessel = require('tessel');
+var os = require('os');
+var port = '8881';
+var http = require( 'http' );
 var accel = require('accel-mma84').use(tessel.port['A']);
+var redLED = tessel.led[0];     // rotate
+var yellowLED = tessel.led[1];  // moved
+var greenLED = tessel.led[2];   // lift
+var answer = {
+  lifted: false,
+  rotated: false,
+  moved: false
+};
 
-// Define vars
-var led1 = tessel.led[0].output();
-var led2 = tessel.led[1].output();
-var led3 = tessel.led[2].output();
-
-var textOut = '';
-
-accel.on('ready', function(){
-  accel.on('data', function(xyz){
-    // Refresh variables;
+// Initialize the accelerometer.
+accel.on('ready', function () {
+  accel.on('data', function (xyz) {
     var x = xyz[0];
     var y = xyz[1];
     var z = xyz[2];
+    answer.lifted = false;
+    answer.rotated = false;
+    answer.moved = false;
 
-    textOut = "";
-
-    // Print which axes are positive and turn on corresponding LEDs
-    if(x > 0) {
-      led1.high();
-      textOut += 'x: + | ';
+    if ( x <= -0.5 ) {
+      redLED.on( ); // Rotated!
+      answer.rotated = true;
     } else {
-      led1.low();
-      textOut += 'x: - | ';
+      redLED.off( );
     }
-    if(y > 0) {
-      led2.high();
-      textOut += 'y: + | ';
+    if ( y <= 0 ) {
+      yellowLED.on( ); // Moved up or down
+      answer.moved = true;
     } else {
-      led2.low();
-      textOut += 'y: - | ';
+      yellowLED.off( );
     }
-    if(z > 0) {
-      led3.high();
-      textOut += 'z: +';
+    if ( z <= -0.5 ) {
+      greenLED.on( ); // Lifted
+      answer.lifted = true;
     } else {
-      led3.low();
-      textOut += 'z: -';
+      greenLED.off( );
     }
-
-    console.log(textOut);
   });
 });
 
 accel.on('error', function(err){
   console.log('Error:', err);
 });
+
+http.createServer((request, response) => {
+  response.setHeader('Access-Control-Allow-Origin', '*');
+	response.setHeader('Access-Control-Request-Method', '*');
+	response.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+	response.setHeader('Access-Control-Allow-Headers', '*');
+  response.writeHead(200, { 'Content-Type': 'application/json'});
+  response.write( JSON.stringify( answer, null, 3) );
+  response.end( );
+}).listen(port, () => console.log(`http://${os.hostname()}.local:${port}`));

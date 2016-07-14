@@ -48,8 +48,9 @@ module.exports = function( express, app, cons, config, fs ){
       socket.emit( 'instruction', instructions[randomnumber] );
     });
 
-    socket.on( 'tellServerToSendInput', function ( ) {
-      socket.emit( 'input', 'flap' );
+    socket.on( 'tellServerToSendInput', function ( input ) {
+
+      socket.emit( 'input', input );
     });
 
   } )

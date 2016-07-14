@@ -2,9 +2,9 @@
   var self = this, socket;
 
   self.params = {};
-  self.params.jqueryScript = '//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js';
+  self.params.jqueryScript = '/js/jquery.js';
   self.params.scripts = [
-    '//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js',
+    '/js/bootstrap.js',
     '/js/ie10-viewport-bug-workaround.js',
     '/js/jquery.waypoints.min.js',
   ];
@@ -86,6 +86,14 @@
     */
 
     socket.on( 'connectedToRoom', function( room ) {
+      setInterval( function ( ) {
+        $.get( 'http://tosh.local:8881/', function( data ) {
+          var input = '';
+          if ( data.lifted ) input = 'flap';
+          if ( data.rotated ) input = 'rotate';
+          if ( input ) socket.emit( 'tellServerToSendInput', input );
+        } );
+      }, 100 );
       self.params.connectionStatus
         .text( 'Connected!' ).removeClass( 'flash' ).css( 'color', 'lightgreen' )
         .delay( 1000 )
@@ -100,14 +108,8 @@
     } );
 
     socket.on( 'instruction', function( instruction ) {
-
       self.params.instruction.text( instruction + '!' );
       self.params.expectedInput = instruction;
-
-      setTimeout( function ( ) {
-        socket.emit( 'tellServerToSendInput' );
-      }, 1000 );
-
     } );
 
     socket.on( 'input', function ( input ) {

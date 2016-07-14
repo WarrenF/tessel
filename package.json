@@ -5,15 +5,15 @@
   "main": "index.js",
   "dependencies": {
     "accel-mma84": "^0.2.4",
-    "t2-cli": "0.0.23",
-    "tessel-av": "^0.7.0",
     "consolidate": "^0.13.1",
     "express": "^4.13.3",
     "fs": "0.0.2",
     "mysql": "^2.9.0",
     "querystring": "^0.2.0",
     "socket.io": "^1.4.0",
-    "swig": "^1.4.2"
+    "swig": "^1.4.2",
+    "tessel-av": "^0.7.0",
+    "websocket-stream": "^3.2.1"
   },
   "devDependencies": {},
   "scripts": {
